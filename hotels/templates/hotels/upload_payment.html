@@ -1,0 +1,22 @@
+{% extends "hotels/base.html" %}
+{% block title %}Upload Payment{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+    <h2>Upload Payment for Booking</h2>
+    <p>Room: {{ booking.room.name }}</p>
+    <p>Dates: {{ booking.check_in }} → {{ booking.check_out }}</p>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label>Upload Payment Proof</label>
+        <input type="file" name="payment_proof" required>
+
+        <button type="submit" class="book-btn" style="margin-top:15px;">
+            Submit Payment
+        </button>
+    </form>
+
+</div>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends 'hotels/base.html' %}
+{% block title %}Dashboard — Luxera{% endblock %}
+{% block content %}
+
+<div class="dashboard-container">
+
+  <h2 class="dashboard-title">Welcome, {{ user.username }} 👋</h2>
+
+  {% if hotel %}
+
+  <!-- HOTEL INFO SECTION -->
+  <div class="hotel-card">
+
+    {% if hotel.image %}
+    <img src="{{ hotel.image.url }}" alt="{{ hotel.name }}" class="hotel-image">
+    {% else %}
+    <div class="hotel-image no-image-placeholder">
+      No image uploaded yet
+    </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" class="dashboard-form">
+      {% csrf_token %}
+
+      <label>Name</label>
+      <input type="text" name="name" value="{{ hotel.name }}" required>
+
+      <label>Location</label>
+      <input type="text" name="location" value="{{ hotel.location }}" required>
+
+      <label>Description</label>
+      <textarea name="description" rows="4">{{ hotel.description }}</textarea>
+
+      <label>Hotel Image</label>
+      <input type="file" name="image">
+
+      <button type="submit" class="save-btn">💾 Save Changes</button>
+    </form>
+
+    <!-- Add multiple photos for hotel -->
+    <a href="{% url 'add_hotel_images' %}" class="book-btn" style="margin-top:15px; display:inline-block;">
+      📷 Add Hotel Photos
+    </a>
+
+  </div>
+
+  <hr style="margin:40px 0;">
+
+
+  <!-- ROOM MANAGEMENT -->
+  <h3>Rooms</h3>
+
+  <a href="{% url 'add_room' %}" class="book-btn" style="margin-bottom:20px; display:inline-block;">
+    ➕ Add New Room
+  </a>
+
+  {% if rooms %}
+  <div class="hotels">
+
+    {% for room in rooms %}
+    <div class="hotel">
+
+      {% if room.image %}
+      <img src="{{ room.image.url }}" alt="{{ room.name }}">
+      {% else %}
+      <img src="https://via.placeholder.com/400x300?text=No+Image">
+      {% endif %}
+
+      <div class="hotel-info">
+        <h2>{{ room.name }}</h2>
+        <p>{{ room.description }}</p>
+        <p><strong>${{ room.price_per_night }}/night</strong></p>
+
+        {% if room.is_available %}
+        <span style="color:green; font-weight:bold;">Available</span>
+        {% else %}
+        <span style="color:red; font-weight:bold;">Booked</span>
+        {% endif %}
+
+        <br><br>
+
+        <!-- Correct Button: Add Room Photos -->
+        <a href="{% url 'add_room_images' room.id %}" class="book-btn" style="padding:6px 12px; background:#0071c2;">
+          ➕ Add Room Photos
+        </a>
+
+      </div>
+
+    </div>
+    {% endfor %}
+
+  </div>
+
+  {% else %}
+  <p>No rooms added yet.</p>
+  {% endif %}
+
+  <hr style="margin:40px 0;">
+
+
+  <!-- BOOKINGS SECTION -->
+  <h3>Booking Requests</h3>
+
+  {% if bookings %}
+  <table style="width:100%; border-collapse:collapse;">
+    <tr style="background:#f0f0f0;">
+      <th>User</th>
+      <th>Room</th>
+      <th>Dates</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+
+    {% for b in bookings %}
+    <tr style="border-bottom:1px solid #ddd;">
+      <td>{{ b.user.username }}</td>
+      <td>{{ b.room.name }}</td>
+      <td>{{ b.check_in }} → {{ b.check_out }}</td>
+      <td>{{ b.status|title }}</td>
+
+      <td>
+        {% if b.status == "pending" %}
+        <a href="{% url 'update_booking_status' b.id 'accept' %}" class="book-btn" style="padding:5px 10px;">Accept</a>
+
+        <a href="{% url 'update_booking_status' b.id 'reject' %}" class="book-btn"
+          style="padding:5px 10px; background:red;">Reject</a>
+
+        {% else %}
+        —
+        {% endif %}
+      </td>
+
+    </tr>
+    {% endfor %}
+
+  </table>
+
+  {% else %}
+  <p>No booking requests yet.</p>
+  {% endif %}
+
+  {% else %}
+  <p class="no-hotel-msg">You don’t manage a hotel yet.</p>
+  {% endif %}
+
+</div>
+
+{% endblock %}

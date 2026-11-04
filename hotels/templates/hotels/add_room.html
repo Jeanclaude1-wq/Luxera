@@ -1,0 +1,47 @@
+{% extends "hotels/base.html" %}
+{% load static %}
+
+{% block title %}Add Room — Luxera{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-container">
+
+    <h2 class="dashboard-title">➕ Add New Room</h2>
+
+    <p style="color:#666; margin-bottom:20px;">
+        Add a new room for your hotel. After creating the room, you can upload multiple photos.
+    </p>
+
+    <form method="POST" enctype="multipart/form-data" class="dashboard-form" style="max-width:600px;">
+        {% csrf_token %}
+
+        <label>Room Name</label>
+        <input type="text" name="name" placeholder="Example: Deluxe Suite" required>
+
+        <label>Description</label>
+        <textarea name="description" rows="4" placeholder="Describe this room..." required></textarea>
+
+        <label>Price per Night ($)</label>
+        <input type="number" name="price_per_night" min="1" step="1" placeholder="150" required>
+
+        <label>Main Image (optional)</label>
+        <input type="file" name="image">
+
+        <button type="submit" class="save-btn" style="margin-top:20px;">
+            💾 Add Room
+        </button>
+    </form>
+
+    <p style="margin-top:20px; color:#555; font-size:14px;">
+        After adding a room, go back to your dashboard and click:
+        <strong style="color:#0071c2;">➕ Add Photos</strong> to upload multiple images for that room.
+    </p>
+
+    <a href="{% url 'dashboard' %}" class="book-btn" style="background:gray; margin-top:20px; display:inline-block;">
+        ← Back to Dashboard
+    </a>
+
+</div>
+
+{% endblock %}

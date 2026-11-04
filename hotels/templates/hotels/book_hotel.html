@@ -1,0 +1,22 @@
+{% extends 'hotels/base.html' %}
+{% block title %}Book {{ hotel.name }} — Luxera{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <h2 class="dashboard-title">Book {{ hotel.name }}</h2>
+
+  <p><strong>Location:</strong> {{ hotel.location }}</p>
+  <p><strong>Price per night:</strong> ${{ hotel.price_per_night }}</p>
+
+  <form method="POST" class="dashboard-form">
+    {% csrf_token %}
+    <label>Check-in date</label>
+    <input type="date" name="check_in" required>
+
+    <label>Check-out date</label>
+    <input type="date" name="check_out" required>
+
+    <button type="submit" class="save-btn">Confirm Booking</button>
+  </form>
+</div>
+{% endblock %}

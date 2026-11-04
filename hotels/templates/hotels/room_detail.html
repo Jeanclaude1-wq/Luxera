@@ -1,0 +1,221 @@
+{% extends "hotels/base.html" %}
+{% load static %}
+
+{% block title %}{{ room.name }} — Details{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-container" style="padding:30px;">
+
+    <!-- Back Button -->
+    <a href="{% url 'hotel_detail' room.hotel.id %}"
+        style="text-decoration:none; color:#003580; font-weight:600; font-size:14px;">
+        ← Back to {{ room.hotel.name }}
+    </a>
+
+    <!-- Room Title -->
+    <h2 style="margin-top:10px; font-size:28px;">{{ room.name }}</h2>
+    <p style="color:#555; font-size:15px;">
+        Hotel: <strong>{{ room.hotel.name }}</strong>
+    </p>
+
+    <hr style="margin:25px 0;">
+
+    <!-- ROOM IMAGE SLIDER -->
+    <div class="slider-container">
+        <div class="slider">
+
+            <!-- Main Image -->
+            {% if room.image %}
+            <div class="slide">
+                <img src="{{ room.image.url }}" alt="{{ room.name }}">
+            </div>
+            {% endif %}
+
+            <!-- Additional Images -->
+            {% for addimg in addtional_images %}
+            <div class="slide">
+                <img src="{{ addimg.image.url }}" alt="{{ room.name }} Photo {{ forloop.counter }}">
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Navigation buttons -->
+        <button class="prev" onclick="moveSlide(-1)">❮</button>
+        <button class="next" onclick="moveSlide(1)">❯</button>
+    </div>
+
+    <hr style="margin:25px 0;">
+
+    <!-- Description -->
+    <p style="margin-top:10px; font-size:16px; line-height:1.6;">
+        {{ room.description }}
+    </p>
+
+    <!-- Price -->
+    <p style="font-size:18px; margin-top:10px;">
+        <strong>Price:</strong> ${{ room.price_per_night }} per night
+    </p>
+
+    <form method="POST" action="/room/{{room.id}}/book/" class="check-form">
+        {% csrf_token %}
+
+        <label>Check-in</label>
+        <input type="text" id="checkin" name="check_in" required placeholder="Select Check-in Date">
+
+        <label>Check-out</label>
+        <input type="text" id="checkout" name="check_out" required placeholder="Select Check-out Date">
+
+        <button type="submit" class="book-btn">Reserve Dates</button>
+    </form>
+
+    <style>
+        .check-form {
+            max-width: 350px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #fff;
+            padding: 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .check-form label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #003580;
+        }
+
+        .check-form input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .book-btn {
+            background: #003580;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+
+
+    <link rel="stylesheet" href="{% static './calendar/calendar.css' %}">
+    <script src="{% static './calendar/calendar.js' %}"></script>
+
+
+    <script>
+        const unavailable = [
+            {% for d in unavailable_dates %}
+        "{{ d }}",
+            {% endfor %}
+    ];
+
+        flatpickr("#checkin", {
+            dateFormat: "Y-m-d",
+            disable: unavailable,
+            minDate: "today",
+            onChange: function (selected) {
+                if (selected.length > 0) {
+                    checkoutPicker.set("minDate", selected[0]); // checkout must be after checkin
+                }
+            }
+        });
+
+        const checkoutPicker = flatpickr("#checkout", {
+            dateFormat: "Y-m-d",
+            disable: unavailable,
+            minDate: "today"
+        });
+    </script>
+
+
+</div>
+<style>
+    .slider-container {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        margin: auto;
+        overflow: hidden;
+        border-radius: 12px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .slider {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .slide {
+        min-width: 100%;
+    }
+
+    .slide img {
+        width: 100%;
+        height: 380px;
+        object-fit: cover;
+    }
+
+    .prev,
+    .next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.4);
+        border: none;
+        color: white;
+        font-size: 22px;
+        padding: 8px 14px;
+        cursor: pointer;
+        border-radius: 6px;
+    }
+
+    .prev:hover,
+    .next:hover {
+        background: rgba(0, 0, 0, 0.6);
+    }
+
+    .prev {
+        left: 12px;
+    }
+
+    .next {
+        right: 12px;
+    }
+</style>
+
+<script>
+    let index = 0;
+    const slider = document.querySelector('.slider');
+    const totalSlides = document.querySelectorAll('.slide').length;
+
+    // Auto slide every 3 seconds
+    setInterval(() => {
+        moveSlide(1);
+    }, 3000);
+
+    function moveSlide(step) {
+        index += step;
+        if (index < 0) index = totalSlides - 1;
+        if (index >= totalSlides) index = 0;
+        slider.style.transform = `translateX(${-index * 100}%)`;
+    }
+
+    // Swipe support for phone & trackpad
+    let startX = 0;
+    slider.addEventListener("touchstart", e => startX = e.touches[0].clientX);
+    slider.addEventListener("touchend", e => {
+        let endX = e.changedTouches[0].clientX;
+        if (startX - endX > 50) moveSlide(1);
+        if (endX - startX > 50) moveSlide(-1);
+    });
+</script>
+{% endblock %}

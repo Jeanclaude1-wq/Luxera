@@ -1,0 +1,672 @@
+{% extends "hotels/base.html" %}
+{% load static %}
+
+{% block title %}Luxera — Find Your Perfect Stay{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #003580;
+        --primary-dark: #002a66;
+        --primary-light: #3a6fc8;
+        --secondary: #f5a623;
+        --secondary-dark: #e69500;
+        --light: #f8f9fa;
+        --gray-light: #e9ecef;
+        --gray: #6c757d;
+        --dark: #1a1a1a;
+        --border-radius: 12px;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+        --transition: all 0.3s ease;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        color: var(--dark);
+        background-color: #f5f7fa;
+        line-height: 1.6;
+    }
+
+    .container {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 30px;
+        max-width: 1400px;
+        margin: 30px auto;
+        padding: 0 20px;
+    }
+
+    /* Filters Section */
+    .filters {
+        background: white;
+        padding: 25px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+    }
+
+    .filters h3 {
+        color: var(--primary);
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--gray-light);
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .filter-section {
+        margin-bottom: 25px;
+    }
+
+    .filter-section label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 500;
+        color: var(--dark);
+    }
+
+    .filter-section h4 {
+        color: var(--dark);
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .filter-section input[type="checkbox"] {
+        margin-right: 10px;
+        transform: scale(1.1);
+        accent-color: var(--primary);
+        cursor: pointer;
+    }
+
+    .filter-section input[type="text"],
+    .filter-section input[type="number"] {
+        padding: 12px 15px;
+        border: 1px solid var(--gray-light);
+        border-radius: 8px;
+        font-size: 15px;
+        transition: var(--transition);
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    .filter-section input[type="text"]:focus,
+    .filter-section input[type="number"]:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(0, 53, 128, 0.1);
+    }
+
+    .price-range {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .price-range input {
+        flex: 1;
+        text-align: center;
+    }
+
+    #apply-filters {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: var(--transition);
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    #apply-filters:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+    }
+
+    /* Hotels List */
+    .hotels {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+    }
+
+    .hotel {
+        background: white;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .hotel:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .hotel img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        transition: var(--transition);
+    }
+
+    .hotel:hover img {
+        transform: scale(1.03);
+    }
+
+    .hotel-info {
+        padding: 25px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .hotel-info h2 {
+        color: var(--dark);
+        margin-bottom: 8px;
+        font-size: 1.4rem;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+
+    .hotel-info p {
+        color: var(--gray);
+        margin-bottom: 15px;
+        line-height: 1.5;
+        flex: 1;
+    }
+
+    .hotel-info p:first-of-type {
+        color: var(--primary);
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .book-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: var(--transition);
+        margin-top: 15px;
+        cursor: pointer;
+        text-align: center;
+        width: fit-content;
+    }
+
+    .book-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+        color: white;
+        text-decoration: none;
+    }
+
+    .clear-btn {
+        background: var(--gray-light);
+        color: var(--dark);
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .clear-btn:hover {
+        background: #d1d5db;
+        transform: translateY(-2px);
+    }
+
+    /* Property Type Styling */
+    .property-type-label {
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+        transition: var(--transition);
+        border-radius: 6px;
+        padding-left: 8px;
+    }
+
+    .property-type-label:hover {
+        background: var(--light);
+    }
+
+    /* No Results State */
+    .no-results {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+    }
+
+    .no-results h3 {
+        color: var(--dark);
+        margin-bottom: 10px;
+    }
+
+    .no-results p {
+        color: var(--gray);
+        max-width: 500px;
+        margin: 0 auto 25px;
+    }
+
+    /* Filter Tags */
+    .filter-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+    }
+
+    .filter-tag {
+        background: var(--light);
+        color: var(--primary);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .container {
+            grid-template-columns: 1fr;
+        }
+
+        .filters {
+            position: static;
+            margin-bottom: 30px;
+        }
+
+        .hotels {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hotels {
+            grid-template-columns: 1fr;
+        }
+
+        .container {
+            padding: 0 15px;
+        }
+    }
+
+    @media (max-width: 480px) {
+
+        .filters,
+        .hotel-info {
+            padding: 20px;
+        }
+
+        .price-range {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 15px;
+        }
+
+        .price-range input {
+            width: 100%;
+        }
+    }
+
+    /* Results Counter */
+    .results-counter {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+    }
+
+    .results-counter h2 {
+        color: var(--dark);
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+
+    .results-count {
+        color: var(--primary);
+        font-weight: 700;
+    }
+
+    /* Sort Dropdown */
+    .sort-dropdown {
+        padding: 10px 15px;
+        border: 1px solid var(--gray-light);
+        border-radius: 8px;
+        background: white;
+        color: var(--dark);
+        font-size: 15px;
+        cursor: pointer;
+        min-width: 200px;
+    }
+
+    .sort-dropdown:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+
+    .main-content {
+        width: calc(100% - 300px) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- FILTERS SIDEBAR -->
+    <form class="filters" method="POST" id="filter-form">
+        {% csrf_token %}
+        <h3>Filters</h3>
+
+        <!-- SEARCH -->
+        <div class="filter-section">
+            <label for="search-input">Search</label>
+            <input type="text" name="search-input" id="search-input" placeholder="Search hotel or location...">
+        </div>
+
+        <!-- PROPERTY TYPE CHECKBOXES -->
+        <div class="filter-section">
+            <h4>Property Type</h4>
+            <div class="property-type-label">
+                <input type="checkbox" class="property-type" name="property_type" value="Hotel" id="hotel">
+                <label for="hotel">Hotel</label>
+            </div>
+            <div class="property-type-label">
+                <input type="checkbox" class="property-type" name="property_type" value="Guesthouse" id="guesthouse">
+                <label for="guesthouse">Guesthouse</label>
+            </div>
+            <div class="property-type-label">
+                <input type="checkbox" class="property-type" name="property_type" value="Apartment" id="apartment">
+                <label for="apartment">Apartment</label>
+            </div>
+            <div class="property-type-label">
+                <input type="checkbox" class="property-type" name="property_type" value="Resort" id="resort">
+                <label for="resort">Resort</label>
+            </div>
+        </div>
+
+        <!-- PRICE RANGE -->
+        <div class="filter-section">
+            <h4>Price Range ($)</h4>
+            <div class="price-range">
+                <input type="number" name="min-price" id="min-price" value="0" min="0" max="10000" step="10"
+                    placeholder="Min">
+                <span style="color: var(--gray);">to</span>
+                <input type="number" name="max-price" id="max-price" value="1000" min="0" max="10000" step="10"
+                    placeholder="Max">
+            </div>
+        </div>
+
+        <button type="submit" id="apply-filters">Apply Filters</button>
+        <button type="button" id="clear-filters" class="clear-btn">
+            Clear All Filters
+        </button>
+    </form>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="main-content" style="width: calc(100% - 300px) !important;">
+        <!-- Results Header -->
+        <div class="results-counter">
+            <h2>Available Stays <span class="results-count">({{ hotels|length }})</span></h2>
+            <select class="sort-dropdown" id="sort-hotels">
+                <option value="">Sort by</option>
+                <option value="price_low">Price: Low to High</option>
+                <option value="price_high">Price: High to Low</option>
+                <option value="name">Name: A to Z</option>
+            </select>
+        </div>
+
+        <!-- Active Filters -->
+        <div class="filter-tags" id="active-filters" style="display: none;">
+            <span style="color: var(--gray); font-size: 0.9rem; margin-right: 10px;">Active filters:</span>
+        </div>
+
+        <!-- HOTELS LIST -->
+        <div class="hotels" id="hotel-list">
+            {% for hotel in hotels %}
+            <div class="hotel" data-name="{{ hotel.name|lower }}" data-location="{{ hotel.location|lower }}"
+                data-type="{{ hotel.type }}" data-price="{{ hotel.rooms.first.price_per_night|default:0 }}">
+
+                <a href="{% url 'hotel_detail' hotel.id %}">
+                    {% if hotel.image %}
+                    <img src="{{ hotel.image.url }}" alt="{{ hotel.name }}">
+                    {% else %}
+                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                        alt="{{ hotel.name }}">
+                    {% endif %}
+                </a>
+
+                <div class="hotel-info">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <h2>{{ hotel.name }}</h2>
+                        <span
+                            style="background: var(--light); color: var(--primary); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">
+                            {{ hotel.type }}
+                        </span>
+                    </div>
+
+                    <p>{{ hotel.location }}</p>
+
+                    <p>{{ hotel.description|truncatewords:20 }}</p>
+
+                    <div style="margin-top: auto;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 5px;">
+                            ${{ hotel.rooms.first.price_per_night|default:"--" }}
+                            <span style="font-size: 0.9rem; color: var(--gray); font-weight: 400;">per night</span>
+                        </div>
+
+                        <a href="{% url 'hotel_detail' hotel.id %}" class="book-btn">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-results">
+                <h3>No hotels found</h3>
+                <p>Try adjusting your search or filter criteria to find what you're looking for.</p>
+                <button id="clear-all-filters" class="book-btn" style="margin: 0 auto;">
+                    Clear All Filters
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Clear filters functionality
+        const clearFiltersBtn = document.getElementById('clear-filters');
+        const clearAllFiltersBtn = document.getElementById('clear-all-filters');
+
+        function clearAllFilters() {
+            // Clear checkboxes
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+
+            // Clear price inputs
+            document.getElementById('min-price').value = 0;
+            document.getElementById('max-price').value = 1000;
+
+            // Clear search input
+            document.getElementById('search-input').value = '';
+
+            // Reset sort dropdown
+            document.getElementById('sort-hotels').value = '';
+
+            // Hide active filters
+            document.getElementById('active-filters').style.display = 'none';
+
+            // Submit form to refresh results
+            document.getElementById('filter-form').submit();
+        }
+
+        if (clearFiltersBtn) {
+            clearFiltersBtn.addEventListener('click', clearAllFilters);
+        }
+
+        if (clearAllFiltersBtn) {
+            clearAllFiltersBtn.addEventListener('click', clearAllFilters);
+        }
+
+        // Sort functionality
+        const sortDropdown = document.getElementById('sort-hotels');
+        if (sortDropdown) {
+            sortDropdown.addEventListener('change', function () {
+                const hotels = Array.from(document.querySelectorAll('.hotel'));
+                const container = document.getElementById('hotel-list');
+
+                hotels.sort((a, b) => {
+                    const sortBy = this.value;
+
+                    switch (sortBy) {
+                        case 'price_low':
+                            return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+                        case 'price_high':
+                            return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+                        case 'name':
+                            return a.dataset.name.localeCompare(b.dataset.name);
+                        default:
+                            return 0;
+                    }
+                });
+
+                // Clear container and append sorted hotels
+                container.innerHTML = '';
+                hotels.forEach(hotel => container.appendChild(hotel));
+            });
+        }
+
+        // Update active filters display
+        function updateActiveFilters() {
+            const activeFilters = document.getElementById('active-filters');
+            const filterTags = activeFilters.querySelector('.filter-tags-content') ||
+                (() => {
+                    const div = document.createElement('div');
+                    div.className = 'filter-tags-content';
+                    div.style.display = 'flex';
+                    div.style.gap = '10px';
+                    div.style.flexWrap = 'wrap';
+                    activeFilters.appendChild(div);
+                    return div;
+                })();
+
+            filterTags.innerHTML = '';
+
+            // Check for search
+            const searchValue = document.getElementById('search-input').value;
+            if (searchValue) {
+                const tag = document.createElement('div');
+                tag.className = 'filter-tag';
+                tag.innerHTML = `Search: "${searchValue}"`;
+                filterTags.appendChild(tag);
+            }
+
+            // Check for property types
+            document.querySelectorAll('.property-type:checked').forEach(cb => {
+                const tag = document.createElement('div');
+                tag.className = 'filter-tag';
+                tag.innerHTML = cb.nextElementSibling.textContent;
+                filterTags.appendChild(tag);
+            });
+
+            // Check for price range
+            const minPrice = document.getElementById('min-price').value;
+            const maxPrice = document.getElementById('max-price').value;
+            if (minPrice > 0 || maxPrice < 1000) {
+                const tag = document.createElement('div');
+                tag.className = 'filter-tag';
+                tag.innerHTML = `Price: $${minPrice}-$${maxPrice}`;
+                filterTags.appendChild(tag);
+            }
+
+            // Show/hide active filters section
+            activeFilters.style.display = filterTags.children.length > 0 ? 'flex' : 'none';
+        }
+
+        // Initialize and update active filters
+        updateActiveFilters();
+
+        // Update on filter changes
+        document.querySelectorAll('#filter-form input').forEach(input => {
+            input.addEventListener('change', updateActiveFilters);
+        });
+        document.getElementById('search-input').addEventListener('input', updateActiveFilters);
+
+        // Form submission with loading state
+        document.getElementById('filter-form').addEventListener('submit', function (e) {
+            const submitBtn = document.getElementById('apply-filters');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = 'Applying...';
+            submitBtn.disabled = true;
+
+            // Small delay to show loading state
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 500);
+        });
+
+        // Price range validation
+        const minPriceInput = document.getElementById('min-price');
+        const maxPriceInput = document.getElementById('max-price');
+
+        function validatePriceRange() {
+            const min = parseInt(minPriceInput.value);
+            const max = parseInt(maxPriceInput.value);
+
+            if (min > max) {
+                minPriceInput.value = max;
+                maxPriceInput.value = min;
+            }
+        }
+
+        minPriceInput.addEventListener('change', validatePriceRange);
+        maxPriceInput.addEventListener('change', validatePriceRange);
+    });
+</script>
+{% endblock %}

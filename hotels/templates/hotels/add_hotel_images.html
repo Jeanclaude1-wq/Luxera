@@ -1,0 +1,22 @@
+{% extends "hotels/base.html" %}
+{% block title %}Add Hotel Photos{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h2>Add Photos for {{ hotel.name }}</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label>Upload Photos</label>
+        <input type="file" name="images" multiple required>
+
+        <button type="submit" class="book-btn" style="margin-top:20px;">
+            ➕ Upload Photos
+        </button>
+    </form>
+
+    <a href="{% url 'dashboard' %}" class="book-btn" style="background:gray; margin-top:20px;">
+        ← Back
+    </a>
+</div>
+{% endblock %}

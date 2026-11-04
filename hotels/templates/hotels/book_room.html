@@ -1,0 +1,39 @@
+{% extends "hotels/base.html" %}
+{% load static %}
+
+{% block title %}Book {{ room.name }}{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-container" style="max-width:600px; margin:auto; padding:20px;">
+
+    <a href="{% url 'room_detail' room.id %}" style="text-decoration:none; font-size:14px; color:#003580;">
+        ← Back to room details
+    </a>
+
+    <h2 style="margin-top:20px;">Book {{ room.name }}</h2>
+    <p>Hotel: <strong>{{ room.hotel.name }}</strong></p>
+
+    {% if room.image %}
+    <img src="{{ room.image.url }}" style="width:100%; max-width:350px; border-radius:10px; margin-top:15px;">
+    {% endif %}
+
+    <hr style="margin:25px 0;">
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label>Check-in date:</label>
+        <input type="date" name="check_in" required class="form-input">
+
+        <label>Check-out date:</label>
+        <input type="date" name="check_out" required class="form-input">
+
+        <button type="submit" class="book-btn" style="margin-top:20px;">
+            Confirm Booking Request
+        </button>
+    </form>
+
+</div>
+
+{% endblock %}

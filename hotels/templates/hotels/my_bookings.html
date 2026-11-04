@@ -1,0 +1,55 @@
+{% extends 'hotels/base.html' %}
+{% block title %}My Bookings — Luxera{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <h2 class="dashboard-title">My Bookings</h2>
+
+  {% if bookings %}
+  <table style="width:100%; border-collapse: collapse;">
+    <tr>
+      <th style="padding:8px; border-bottom:1px solid #ddd;">Hotel</th>
+      <th style="padding:8px; border-bottom:1px solid #ddd;">Check-in</th>
+      <th style="padding:8px; border-bottom:1px solid #ddd;">Check-out</th>
+      <th style="padding:8px; border-bottom:1px solid #ddd;">Total Price</th>
+      <th style="padding:8px; border-bottom:1px solid #ddd;">Booked at</th>
+      <th style="padding:8px; border-bottom:1px solid #ddd;">Status</th>
+      <th style="padding:8px; border-bottom:1px solid #ddd;">Action</th>
+    </tr>
+
+    {% for booking in bookings %}
+    <tr>
+      <td style="padding:8px;">{{ booking.room }}</td>
+      <td style="padding:8px;">{{ booking.check_in }}</td>
+      <td style="padding:8px;">{{ booking.check_out }}</td>
+      <td style="padding:8px;">{{ booking.get_total_price }}$</td>
+      <td style="padding:8px;">{{ booking.created_at }}</td>
+      <td style="padding:8px;">{{ booking.status }}</td>
+      <td style="padding:8px;">
+        <form action="/cancel_reservation/" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="reservation_id" value="{{booking.pk}}">
+          <input type="submit" value="Cancel Reservation">
+        </form>
+      </td>
+      {% if booking.status != "rejected" and booking.status != "Canceled" %}
+      <td>
+        <form action="/proceed_to_payment/" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="reservation_id" value="{{booking.pk}}">
+          <input type="submit" value="Procceed To Payment">
+        </form>
+      </td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p>No bookings yet.</p>
+  {% endif %}
+</div>
+{% if b.status == "accepted" and b.payment_status != "paid" %}
+<a href="{% url 'upload_payment' b.id %}" class="book-btn">Upload Payment</a>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "hotels/base.html" %}
+{% load static %}
+
+{% block title %}{{ hotel.name }} — Rooms{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-container" style="padding:30px;">
+
+    <!-- Back link -->
+    <a href="{% url 'hotel_list' %}" style="text-decoration:none; color:#003580; font-weight:600; font-size:14px;">
+        ← Back to all hotels
+    </a>
+
+    <!-- Hotel Header -->
+    <h2 style="text-align:center; margin-top:10px; font-size:32px;">
+        {{ hotel.name }}
+    </h2>
+    <p style="text-align:center; color:#555; font-size:15px;">
+        📍 {{ hotel.location }}
+    </p>
+    <p style="text-align:center; max-width:650px; margin: auto; color:#666; font-size:15px; line-height:1.6;">
+        {{ hotel.description }}
+    </p>
+
+    <hr style="margin:35px 0;">
+
+    <!-- Rooms title -->
+    <h3 style="margin-bottom:20px; font-size:24px;">Available Rooms</h3>
+
+    {% if rooms %}
+    <div class="hotels" style="display:flex; flex-wrap:wrap; gap:25px;">
+
+        {% for room in rooms %}
+        <div class="hotel" style="width:calc(50% - 15px); background:white; border-radius:12px; 
+                    box-shadow:0 4px 12px rgba(0,0,0,0.08); overflow:hidden;">
+
+            <!-- Room Image (clickable) -->
+            <a href="{% url 'room_detail' room.id %}">
+                {% if room.image %}
+                <img src="{{ room.image.url }}" alt="{{ room.name }}"
+                    style="width:100%; height:220px; object-fit:cover;">
+                {% else %}
+                <img src="https://via.placeholder.com/450x300?text=No+Image" alt="No image"
+                    style="width:100%; height:220px; object-fit:cover;">
+                {% endif %}
+            </a>
+
+            <!-- Room Info -->
+            <div class="hotel-info" style="padding:18px;">
+
+                <!-- Room name clickable -->
+                <a href="{% url 'room_detail' room.id %}" style="text-decoration:none; color:#003580;">
+                    <h2 style="margin:0 0 8px 0; font-size:22px;">{{ room.name }}</h2>
+                </a>
+
+                <p style="color:#666; font-size:14px; margin-bottom:8px;">
+                    {{ room.description|truncatewords:20 }}
+                </p>
+
+                <p style="font-size:17px; margin-bottom:12px;">
+                    <strong>${{ room.price_per_night }}</strong> / night
+                </p>
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+    <p style="color:#999; text-align:center; margin-top:20px;">
+        This hotel has no rooms added yet.
+    </p>
+    {% endif %}
+
+</div>
+
+{% endblock %}
