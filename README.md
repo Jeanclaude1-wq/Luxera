@@ -31,4 +31,49 @@ It also provides management features for hotel owners and administrators to mana
 
 The project is organized into Django applications, templates, static files, and database components.
 
-## Installation and
+## Installation and Usage
+
+1. Clone the repository:
+   ```bash
+   git clone YOUR_REPOSITORY_URL
+   ```
+
+2. Navigate to the project directory:
+   ```bash
+   cd Luxera
+   ```
+
+3. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   ```
+
+4. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. Apply database migrations:
+   ```bash
+   python manage.py migrate
+   ```
+
+6. Start the development server:
+   ```bash
+   python manage.py runserver
+   ```
+
+7. Open your browser and visit:
+   `http://127.0.0.1:8000/`
+
+## Project Purpose
+
+Luxera was developed as part of my Bachelor of Computer Science graduation project. It provided practical experience in web application development, backend programming, database management, and building a multi-user hotel booking platform.
+
+---
+
+**Developed by:** Jean-Claude Saadeh
+
+**University:** Arab Open University – Lebanon
+
+**Project:** TM471 Graduation Project
